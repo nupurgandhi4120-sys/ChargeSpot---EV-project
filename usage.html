@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Usage Data &amp; Telemetry Dashboard – ChargeSpot</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" onerror="this.onerror=null;this.href='/styles.css';" />
+    <style>
+      .usage-dashboard-shell {
+        min-height: 100vh;
+        background: var(--bg-soft, #f6faf7);
+        padding-bottom: 4rem;
+      }
+      .usage-dash-main {
+        max-width: 1140px;
+        margin: 2rem auto 0;
+        padding: 0 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .usage-panel {
+        background: #ffffff;
+        border: 1px solid rgba(2, 44, 34, 0.08);
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(18, 56, 34, 0.06);
+      }
+      .dash-kpis-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1.25rem;
+      }
+      @media (min-width: 768px) {
+        .dash-kpis-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      @media (min-width: 1024px) {
+        .dash-kpis-grid {
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+      }
+      .dash-kpi-card {
+        background: #f8fafc;
+        border: 1px solid var(--slate-200);
+        border-radius: 1rem;
+        padding: 1rem;
+        text-align: center;
+      }
+      .dash-kpi-val {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        line-height: 1.1;
+      }
+      .dash-kpi-lbl {
+        margin-top: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--slate-600);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .dash-two-col {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      @media (min-width: 768px) {
+        .dash-two-col {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .type-bar-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.65rem;
+        font-size: 0.8125rem;
+      }
+      .type-bar-track {
+        flex: 1 1 0%;
+        height: 0.5rem;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+      }
+      .type-bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--green);
+        transition: width 0.3s ease;
+      }
+      .table-filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .events-table-wrap {
+        overflow-x: auto;
+        border-radius: 1rem;
+        border: 1px solid var(--slate-200);
+      }
+      .events-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8125rem;
+        background: #ffffff;
+      }
+      .events-table th,
+      .events-table td {
+        padding: 0.65rem 0.85rem;
+        text-align: left;
+        border-bottom: 1px solid var(--slate-200);
+        white-space: nowrap;
+      }
+      .events-table th {
+        background: #f8fafc;
+        font-weight: 800;
+        color: var(--slate-600);
+      }
+      .events-table tr:hover td {
+        background: #f8fafc;
+      }
+      .badge-event-type {
+        display: inline-block;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+      .badge-type-search { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+      .badge-type-station_view { background: #faf5ff; color: #6b21a8; border-color: #e9d5ff; }
+      .badge-type-filter { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+      .badge-type-error { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+      .badge-type-task_complete { background: #ecfeff; color: #155e75; border-color: #a5f3fc; }
+    </style>
+  </head>
+  <body>
+    <div class="usage-dashboard-shell">
+      <header class="site-header">
+        <div class="container header-inner">
+          <a href="/" class="brand-logo">
+            <span class="brand-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" class="icon-20">
+                <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
+              </svg>
+            </span>
+            <span class="brand-wordmark">
+              Charge<span class="text-green">Spot</span>
+            </span>
+            <span class="brand-pill">Usage Analytics</span>
+          </a>
+
+          <div class="header-actions">
+            <a href="/" class="btn-outline-sm">&larr; Back to Station Finder</a>
+            <a href="/test" class="btn-outline-sm">Test Mode</a>
+            <a href="/export.csv?table=usage_events" class="footer-export-link" download>Export Usage CSV</a>
+          </div>
+        </div>
+      </header>
+
+      <main class="usage-dash-main">
+        <!-- Overview Banner -->
+        <section class="usage-panel">
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1rem;">
+            <div>
+              <span class="usage-badge">
+                <span class="pulse-dot-green"></span> Self-Recording Active
+              </span>
+              <h1 style="margin:0.5rem 0 0.25rem;font-size:1.75rem;font-weight:800;color:var(--ink);">
+                Self-Recorded Usage Telemetry
+              </h1>
+              <p style="margin:0;max-width:44rem;color:var(--slate-600);font-size:0.875rem;line-height:1.6;">
+                ChargeSpot records its own interactions, search terms, filter selections, station views, navigation clicks, and task completion times autonomously into SQLite (`usage_events`). Use this live dashboard to inspect or export your evaluation dataset.
+              </p>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+              <button type="button" id="refreshAllBtn" class="btn-outline-sm">&#x21bb; Refresh</button>
+              <a href="/export.csv?table=usage_events" class="btn-submit-report" style="text-decoration:none;" download>Download CSV</a>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="dash-kpis-grid">
+            <div class="dash-kpi-card">
+              <div class="dash-kpi-val" id="dashValEvents">0</div>
+              <div class="dash-kpi-lbl">Total Events</div>
+            </div>
+            <div class="dash-kpi-card">
+              <div class="dash-kpi-val" id="dashValSessions">0</div>
+              <div class="dash-kpi-lbl">Sessions</div>
+            </div>
+            <div class="dash-kpi-card">
+              <div class="dash-kpi-val" id="dashValSearches">0</div>
+              <div class="dash-kpi-lbl">Searches</div>
+            </div>
+            <div class="dash-kpi-card">
+              <div class="dash-kpi-val" id="dashValStationViews">0</div>
+              <div class="dash-kpi-lbl">Station Views</div>
+            </div>
+            <div class="dash-kpi-card">
+              <div class="dash-kpi-val" id="dashValDirections">0</div>
+              <div class="dash-kpi-lbl">Directions</div>
+            </div>
+            <div class="dash-kpi-card">
+              <div class="dash-kpi-val" id="dashValReports">0</div>
+              <div class="dash-kpi-lbl">Rider Reports</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Two Column Breakdown -->
+        <div class="dash-two-col">
+          <section class="usage-panel">
+            <h2 style="margin:0 0 1rem;font-size:1.05rem;font-weight:800;color:var(--ink);">
+              Interactions by Event Type
+            </h2>
+            <div id="eventTypesBreakdown">
+              <div style="color:#64748b;font-size:0.8125rem;">Loading event breakdown...</div>
+            </div>
+          </section>
+
+          <section class="usage-panel">
+            <h2 style="margin:0 0 1rem;font-size:1.05rem;font-weight:800;color:var(--ink);">
+              Top Features &amp; Click Targets
+            </h2>
+            <div id="topTargetsBreakdown">
+              <div style="color:#64748b;font-size:0.8125rem;">Loading top targets...</div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Full Recorded Events Table -->
+        <section class="usage-panel">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+            <div>
+              <h2 style="margin:0 0 0.25rem;font-size:1.15rem;font-weight:800;color:var(--ink);">
+                Self-Recorded Events Log
+              </h2>
+              <p style="margin:0;font-size:0.8125rem;color:var(--slate-500);">
+                Chronological feed of usage events stored in SQLite `usage_events`.
+              </p>
+            </div>
+          </div>
+
+          <div class="table-filter-bar">
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <label for="filterEventType" style="font-size:0.8125rem;font-weight:700;color:var(--slate-700);">Filter type:</label>
+              <select id="filterEventType" class="field-select" style="width:auto;padding:0.4rem 0.75rem;font-size:0.8125rem;">
+                <option value="all">All Events</option>
+                <option value="click">Clicks</option>
+                <option value="search">Searches</option>
+                <option value="station_view">Station Views</option>
+                <option value="filter">Filters</option>
+                <option value="page_view">Page Views</option>
+                <option value="task_complete">Task Complete</option>
+                <option value="test_run">Test Runs</option>
+                <option value="error">Errors</option>
+              </select>
+            </div>
+            <div style="font-size:0.75rem;color:var(--slate-500);" id="tableCountLabel">Showing recent events</div>
+          </div>
+
+          <div class="events-table-wrap">
+            <table class="events-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Time</th>
+                  <th>Session</th>
+                  <th>Event Type</th>
+                  <th>Action / Target</th>
+                  <th>Station ID</th>
+                  <th>Seconds</th>
+                  <th>Success</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="eventsTableBody">
+                <tr><td colspan="9" style="text-align:center;color:#64748b;">Loading usage events...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      (() => {
+        let allEvents = [];
+
+        function escapeHtml(val) {
+          return String(val ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        async function fetchSummary() {
+          try {
+            const res = await fetch("/api/usage/summary");
+            if (!res.ok) throw new Error("Failed to fetch usage summary");
+            const data = await res.json();
+
+            document.getElementById("dashValEvents").textContent = data.totalEvents || 0;
+            document.getElementById("dashValSessions").textContent = data.totalSessions || 0;
+            document.getElementById("dashValSearches").textContent = data.totalSearches || 0;
+            document.getElementById("dashValStationViews").textContent = data.totalStationViews || 0;
+            document.getElementById("dashValDirections").textContent = data.totalDirections || 0;
+            document.getElementById("dashValReports").textContent = data.totalReports || 0;
+
+            renderTypesBreakdown(data.eventsByType || {}, data.totalEvents || 1);
+            renderTargetsBreakdown(data.topTargets || []);
+          } catch (err) {
+            console.error("Summary error:", err);
+          }
+        }
+
+        function renderTypesBreakdown(byType, total) {
+          const container = document.getElementById("eventTypesBreakdown");
+          const keys = Object.keys(byType);
+          if (!keys.length) {
+            container.innerHTML = '<div style="color:#64748b;font-size:0.8125rem;">No events logged yet.</div>';
+            return;
+          }
+          container.innerHTML = keys
+            .map((k) => {
+              const count = byType[k];
+              const pct = Math.round((count / Math.max(1, total)) * 100);
+              return `
+                <div class="type-bar-row">
+                  <span style="font-weight:700;min-width:90px;">${escapeHtml(k)}</span>
+                  <div class="type-bar-track">
+                    <div class="type-bar-fill" style="width:${pct}%;"></div>
+                  </div>
+                  <span style="font-weight:800;min-width:45px;text-align:right;">${count} (${pct}%)</span>
+                </div>`;
+            })
+            .join("");
+        }
+
+        function renderTargetsBreakdown(topTargets) {
+          const container = document.getElementById("topTargetsBreakdown");
+          if (!topTargets.length) {
+            container.innerHTML = '<div style="color:#64748b;font-size:0.8125rem;">No target actions logged yet.</div>';
+            return;
+          }
+          const maxCount = Math.max(1, ...topTargets.map((t) => t.count));
+          container.innerHTML = topTargets
+            .map((t) => {
+              const pct = Math.round((t.count / maxCount) * 100);
+              return `
+                <div class="type-bar-row">
+                  <span style="font-weight:700;min-width:130px;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(t.target)}">${escapeHtml(t.target)}</span>
+                  <div class="type-bar-track">
+                    <div class="type-bar-fill" style="width:${pct}%;background:#3b82f6;"></div>
+                  </div>
+                  <span style="font-weight:800;min-width:35px;text-align:right;">${t.count}</span>
+                </div>`;
+            })
+            .join("");
+        }
+
+        async function fetchEventsTable() {
+          try {
+            const res = await fetch("/api/events?limit=100");
+            if (!res.ok) throw new Error("Failed to load events");
+            const data = await res.json();
+            allEvents = data.events || [];
+            renderTable();
+          } catch (err) {
+            document.getElementById("eventsTableBody").innerHTML =
+              '<tr><td colspan="9" style="text-align:center;color:#b91c1c;">Could not load events.</td></tr>';
+          }
+        }
+
+        function renderTable() {
+          const filter = document.getElementById("filterEventType").value;
+          const filtered = filter === "all" ? allEvents : allEvents.filter((e) => e.eventType === filter);
+          document.getElementById("tableCountLabel").textContent = `Showing ${filtered.length} of ${allEvents.length} events`;
+
+          if (!filtered.length) {
+            document.getElementById("eventsTableBody").innerHTML =
+              '<tr><td colspan="9" style="text-align:center;color:#64748b;">No events match filter.</td></tr>';
+            return;
+          }
+
+          document.getElementById("eventsTableBody").innerHTML = filtered
+            .map((e) => {
+              const badgeClass = `badge-event-type badge-type-${e.eventType || "default"}`;
+              const time = new Date(e.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+              return `
+                <tr>
+                  <td><strong>#${e.id}</strong></td>
+                  <td style="color:#64748b;">${escapeHtml(time)}</td>
+                  <td style="font-family:monospace;font-size:11px;" title="${escapeHtml(e.sessionId)}">${escapeHtml((e.sessionId || "").slice(0, 12))}...</td>
+                  <td><span class="${badgeClass}">${escapeHtml(e.eventType)}</span></td>
+                  <td><strong>${escapeHtml(e.target || "-")}</strong></td>
+                  <td>${e.stationId ? `<span class="spec-chip">${escapeHtml(e.stationId)}</span>` : "-"}</td>
+                  <td>${e.seconds !== null && e.seconds !== undefined ? `${Number(e.seconds).toFixed(1)}s` : (e.taskTimeMs ? `${(e.taskTimeMs/1000).toFixed(1)}s` : "-")}</td>
+                  <td>${e.success ? '<span style="color:#059669;font-weight:700;">✓ Ok</span>' : '<span style="color:#dc2626;font-weight:700;">✕ Fail</span>'}</td>
+                  <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;color:#475569;" title="${escapeHtml(e.details)}">${escapeHtml(e.details || "-")}</td>
+                </tr>`;
+            })
+            .join("");
+        }
+
+        document.getElementById("filterEventType").addEventListener("change", renderTable);
+        document.getElementById("refreshAllBtn").addEventListener("click", () => {
+          fetchSummary();
+          fetchEventsTable();
+        });
+
+        fetchSummary();
+        fetchEventsTable();
+      })();
+    </script>
+  </body>
+</html>

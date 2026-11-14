@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Find Ahmedabad EV charging stations with rider-reported Working, Busy, and Broken status updates and Google Maps directions."
+    />
+    <title>ChargeSpot – Ahmedabad EV Charging Stations</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" onerror="this.onerror=null;this.href='/styles.css';" />
+  </head>
+  <body>
+    <main id="top" class="app-shell">
+      <!-- Top Navigation Bar -->
+      <header class="site-header">
+        <div class="container header-inner">
+          <a href="#top" class="brand-logo">
+            <span class="brand-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" class="icon-20">
+                <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
+              </svg>
+            </span>
+            <span class="brand-wordmark">
+              Charge<span class="text-green">Spot</span>
+            </span>
+            <span class="brand-pill">Ahmedabad EV Grid</span>
+          </a>
+
+          <nav class="desktop-nav" aria-label="Primary navigation">
+            <a href="#stations">Radar &amp; Stations</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#why-us">Community Status</a>
+            <a href="#usage-data">Usage Data</a>
+            <a href="/usage">Analytics</a>
+            <a href="/test">Test Mode</a>
+          </nav>
+
+          <div class="header-actions">
+            <div class="header-usage-pill" id="headerUsagePill" title="ChargeSpot continuously records its own usage data">
+              <span class="pulse-dot-green"></span>
+              <span class="usage-pill-text">Recorded: <strong id="headerEventsCount">0</strong> events</span>
+            </div>
+
+            <button
+              type="button"
+              id="headerNearMeBtn"
+              class="btn-near-me-header"
+              title="Locate your GPS position and show the closest station"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-16 locate-icon">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                <circle cx="12" cy="12" r="7" />
+              </svg>
+              <span id="headerNearMeLabel">Near Me</span>
+            </button>
+
+            <button
+              type="button"
+              id="mobileMenuToggle"
+              class="mobile-menu-btn"
+              aria-label="Toggle menu"
+              aria-expanded="false"
+            >
+              <svg id="mobileMenuIconOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+              </svg>
+              <svg id="mobileMenuIconClose" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20 hidden">
+                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <nav id="mobileMenu" class="mobile-nav hidden" aria-label="Mobile navigation">
+          <div class="mobile-nav-links">
+            <button type="button" id="mobileNearMeBtn" class="mobile-near-me">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-16">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                <circle cx="12" cy="12" r="7" />
+              </svg>
+              Near Me (Find Closest)
+            </button>
+            <a href="#stations" class="mobile-nav-link">Radar &amp; Stations</a>
+            <a href="#how-it-works" class="mobile-nav-link">How it works</a>
+            <a href="#why-us" class="mobile-nav-link">Community Status</a>
+            <a href="#usage-data" class="mobile-nav-link">Usage Data</a>
+            <a href="/usage" class="mobile-nav-link">Analytics Dashboard</a>
+            <a href="/test" class="mobile-nav-link">Test Mode</a>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="hero-section hero-grid">
+        <div class="hero-fade"></div>
+        <div class="container hero-layout">
+          <div class="hero-content">
+            <div class="hero-live-badge">
+              <span class="ping-dot-wrap">
+                <span class="ping-dot-ring"></span>
+                <span class="ping-dot-core"></span>
+              </span>
+              Ahmedabad Rider-Verified EV Network
+            </div>
+
+            <h1 class="hero-title">
+              Accurate EV Status.
+              <span class="text-green">Zero Waiting.</span>
+            </h1>
+
+            <p class="hero-subtitle">
+              Find EV charging stations across Ahmedabad with rider-reported
+              Working, Busy, and Broken statuses, charger speeds, and instant
+              Google Maps directions.
+            </p>
+
+            <div class="hero-cta-group">
+              <button
+                type="button"
+                id="heroBtn4W"
+                class="btn-hero-4w"
+                title="Search 4-Wheeler car charging stations"
+              >
+                <span class="emoji-icon">🚗</span>
+                <span id="heroLabel4W">4-Wheeler Cars (18)</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="icon-16 search-arrow">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" stroke-linecap="round" />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                id="heroBtn2W"
+                class="btn-hero-2w"
+                title="Search 2-Wheeler scooter and bike charging points"
+              >
+                <span class="emoji-icon">🛵</span>
+                <span id="heroLabel2W">2-Wheeler Scooters (11)</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="icon-16 search-arrow">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="hero-trust-row">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="icon-16 text-green">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m9 12 2 2 4-4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Rider-verified Working / Busy / Broken status
+              </span>
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="icon-16 text-green">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 12 2 2 4-4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Direct Google Maps navigation
+              </span>
+            </div>
+          </div>
+
+          <!-- Hero EV Showcase -->
+          <div class="hero-visual">
+            <div class="ev-car-stage">
+              <div class="ev-car-glow" aria-hidden="true"></div>
+              <div class="ev-car-shadow" aria-hidden="true"></div>
+              <img
+                src="/static/mg-zs-ev-transparent.png"
+                onerror="this.onerror=null;this.src='/mg-zs-ev-transparent.png';"
+                alt="White MG ZS electric vehicle"
+                width="786"
+                height="434"
+                class="ev-car-img"
+              />
+              <div class="ev-card-float">
+                <span class="ev-card-dot"></span>
+                <div>
+                  <span class="ev-card-kicker">Rider network</span>
+                  <span class="ev-card-sub">Community station status</span>
+                </div>
+              </div>
+              <div class="ev-pill-float">Precise Google coordinates</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Stations & Radar Section -->
+      <section id="stations" class="stations-section">
+        <div class="container">
+          <!-- Section Header -->
+          <div class="section-header-center">
+            <span class="eyebrow">Ahmedabad EV Station Directory</span>
+            <h2 class="section-title">Ahmedabad Charging Network</h2>
+            <p class="section-copy" id="directorySummaryCopy">
+              Browse 24 stations in Ahmedabad with rider-reported Working, Busy,
+              and Broken statuses, charging power rates, and GPS coordinates.
+            </p>
+          </div>
+
+          <!-- Summary Stat Cards -->
+          <div class="stat-cards-grid stat-cards-4" id="statCardsGrid">
+            <div class="stat-card">
+              <div class="stat-icon-box tone-emerald">
+                <svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div class="stat-value">{{ counts.working if counts is defined else 0 }}</div>
+              <div class="stat-label">Working Stations</div>
+              <div class="stat-sub">Confirmed ready by riders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon-box tone-amber">
+                <svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="stat-value">{{ counts.busy if counts is defined else 0 }}</div>
+              <div class="stat-label">Busy Stations</div>
+              <div class="stat-sub">Queue or active charging</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon-box tone-red">
+                <svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              </div>
+              <div class="stat-value">{{ counts.broken if counts is defined else 0 }}</div>
+              <div class="stat-label">Broken Stations</div>
+              <div class="stat-sub">Reported offline or faulted</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon-box tone-cyan">
+                <svg class="icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+              <div class="stat-value">{{ counts.totalPoints if counts is defined else 72 }}</div>
+              <div class="stat-label">Charging Points</div>
+              <div class="stat-sub">{{ counts.unreported if counts is defined else 24 }} unreported • {{ counts.totalReports if counts is defined else 0 }} reports</div>
+            </div>
+          </div>
+
+          <!-- Interactive Radar Map -->
+          <div class="radar-wrapper">
+            <div class="radar-topbar">
+              <div class="radar-title-group">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20 text-green">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                  <polyline points="2 17 12 22 22 17" />
+                  <polyline points="2 12 12 17 22 12" />
+                </svg>
+                <h3>Interactive Ahmedabad Station Map</h3>
+              </div>
+              <button type="button" id="toggleRadarBtn" class="btn-outline-sm">
+                Hide Map
+              </button>
+            </div>
+
+            <div id="radarPanel" class="radar-panel">
+              <div class="radar-overlay-bar">
+                <div class="radar-status-heading">
+                  <span class="ping-dot-wrap">
+                    <span class="ping-dot-ring"></span>
+                    <span class="ping-dot-core"></span>
+                  </span>
+                  <div>
+                    <div class="radar-title-line">
+                      Ahmedabad EV Station Map
+                      <span class="radar-chip">RIDER REPORTS</span>
+                    </div>
+                    <p class="radar-subtext" id="radarGunSummary">
+                      Showing station status derived from recent rider reports
+                    </p>
+                  </div>
+                </div>
+
+                <div class="radar-legend" id="radarLegend">
+                  <span class="legend-item legend-green"><span class="legend-dot dot-green"></span><span id="radarWorkingCount">0</span> Working</span>
+                  <span class="legend-item legend-amber"><span class="legend-dot dot-amber"></span><span id="radarBusyCount">0</span> Busy</span>
+                  <span class="legend-item legend-red"><span class="legend-dot dot-red"></span><span id="radarBrokenCount">0</span> Broken</span>
+                </div>
+
+                <div class="radar-zoom-controls">
+                  <button type="button" id="zoomInBtn" aria-label="Zoom in map" title="Zoom in">+</button>
+                  <button type="button" id="zoomOutBtn" aria-label="Zoom out map" title="Zoom out">−</button>
+                  <button type="button" id="zoomResetBtn" aria-label="Reset zoom" title="Reset zoom">↺</button>
+                </div>
+              </div>
+
+              <div class="radar-canvas-box">
+                <svg id="radarSvg" viewBox="0 0 800 550" class="radar-svg">
+                  <defs>
+                    <linearGradient id="riverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.25" />
+                      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.15" />
+                    </linearGradient>
+                  </defs>
+
+                  <path d="M 440 10 Q 430 90, 420 180 T 400 320 T 380 430 T 350 540" fill="none" stroke="url(#riverGradient)" stroke-width="32" stroke-linecap="round" />
+                  <path d="M 440 10 Q 430 90, 420 180 T 400 320 T 380 430 T 350 540" fill="none" stroke="#38bdf8" stroke-opacity="0.2" stroke-width="4" stroke-dasharray="6 6" />
+                  <path d="M 220 20 Q 250 160, 270 290 T 290 490" fill="none" stroke="#64748b" stroke-opacity="0.3" stroke-width="3" />
+                  <ellipse cx="400" cy="275" rx="320" ry="230" fill="none" stroke="#475569" stroke-opacity="0.2" stroke-width="2" stroke-dasharray="8 8" />
+                  <ellipse cx="400" cy="275" rx="200" ry="145" fill="none" stroke="#475569" stroke-opacity="0.25" stroke-width="1.5" />
+
+                  <text x="215" y="45" fill="#94a3b8" font-size="10" font-weight="bold">SG HIGHWAY</text>
+                  <text x="445" y="80" fill="#38bdf8" font-size="9" font-weight="600" opacity="0.6">Sabarmati River</text>
+                  <text x="240" y="320" fill="#94a3b8" font-size="9" font-weight="bold">Prahlad Nagar</text>
+                  <text x="480" y="240" fill="#94a3b8" font-size="9" font-weight="bold">Ellisbridge</text>
+                  <text x="480" y="110" fill="#94a3b8" font-size="9" font-weight="bold">GIFT City ↗</text>
+                  <text x="430" y="420" fill="#94a3b8" font-size="9" font-weight="bold">Kankaria Lake</text>
+                  <text x="310" y="110" fill="#94a3b8" font-size="9" font-weight="bold">Chandkheda</text>
+
+                  <g id="radarUserLayer"></g>
+                  <g id="radarPinsLayer"></g>
+                </svg>
+
+                <div id="radarHoverCard" class="radar-hover-card hidden"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2-Wheeler vs 4-Wheeler Vehicle Category Banner -->
+          <div class="vehicle-banner">
+            <div class="vehicle-banner-info">
+              <div class="vehicle-banner-kicker">Vehicle Compatibility Filter</div>
+              <h3>Separate 2-Wheeler &amp; 4-Wheeler Stations</h3>
+            </div>
+            <div class="vehicle-tabs" role="tablist" aria-label="Vehicle category">
+              <button type="button" id="tabVehicleAll" class="vehicle-tab active-all">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="icon-14 text-emerald-500">
+                  <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
+                </svg>
+                <span id="tabLabelAll">All (24)</span>
+              </button>
+              <button type="button" id="tabVehicle4W" class="vehicle-tab">
+                <span>🚗</span>
+                <span id="tabLabel4W">4-Wheeler Cars &amp; SUVs (18)</span>
+              </button>
+              <button type="button" id="tabVehicle2W" class="vehicle-tab">
+                <span>🛵</span>
+                <span id="tabLabel2W">2-Wheeler Scooters &amp; Bikes (11)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Area Controls -->
+          <div id="search-controls" class="search-controls-card">
+            <div class="search-top-row">
+              <label class="search-input-box" id="searchInputBox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="icon-20 text-green shrink-0">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" stroke-linecap="round" />
+                </svg>
+                <input
+                  type="text"
+                  id="stationSearchInput"
+                  placeholder="Search station, operator, or locality (e.g. Torrent Power, Prahlad Nagar, Statiq)"
+                />
+              </label>
+
+              <button
+                type="button"
+                id="searchNearMeBtn"
+                class="btn-near-me-search"
+                title="Locate your position and show the closest charging station"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-16 locate-icon">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                  <circle cx="12" cy="12" r="7" />
+                </svg>
+                <span id="searchNearMeLabel">Near Me</span>
+              </button>
+            </div>
+
+            <!-- Live GPS Banner (visible after Near Me) -->
+            <div id="liveLocationBanner" class="live-gps-banner hidden"></div>
+
+            <!-- Geo Error Alert -->
+            <div id="geoAlertBanner" class="geo-alert-banner hidden"></div>
+
+            <!-- Area Filter Pills -->
+            <div class="area-pills-row" id="areaPillsRow">
+              <button type="button" class="area-pill is-active" data-area="All Areas">All Areas ({{ stations|length if stations is defined else 24 }})</button>
+              {% if sorted_areas is defined %}
+                {% for area in sorted_areas %}
+                  <button type="button" class="area-pill" data-area="{{ area }}">{{ area }} ({{ area_counts[area] }})</button>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <!-- Secondary Filter Dropdowns -->
+            <div class="secondary-filters-row">
+              <select id="statusFilterSelect" class="filter-select" aria-label="Filter by status">
+                <option value="All statuses">All statuses</option>
+                <option value="Working">Working</option>
+                <option value="Busy">Busy</option>
+                <option value="Broken">Broken</option>
+                <option value="Unreported">Unreported</option>
+              </select>
+
+              <select id="typeFilterSelect" class="filter-select" aria-label="Filter by charger type">
+                <option value="All chargers">All chargers</option>
+                <option value="DC">DC Fast</option>
+                <option value="AC">AC Level 2</option>
+              </select>
+
+              <select id="networkFilterSelect" class="filter-select" aria-label="Filter by network">
+                <option value="All networks">All networks</option>
+              </select>
+
+              <div class="showing-count" id="showingCountLabel">
+                Showing 24 stations
+              </div>
+            </div>
+          </div>
+
+          <!-- Station Cards Grid Container -->
+          <div class="stations-grid-shell">
+            <div class="stations-grid-header">
+              <div>
+                <p class="sort-subtitle" id="sortSubtitle">
+                  Sorted by distance from the searched area
+                </p>
+                <h3 class="stations-count-heading" id="stationsCountHeading">
+                  24 charging stations
+                </h3>
+              </div>
+              <p class="radius-note">
+                Click any card to report status or open Google Maps
+              </p>
+            </div>
+
+            <div id="stationsGrid" class="stations-grid">
+              {% if stations is defined and stations %}
+                {% for st in stations %}
+                  <article class="station-card" id="card-{{ st.id }}">
+                    <div class="card-top-row">
+                      <div class="card-badges">
+                        <span class="status-pill status-{{ st.status|lower }}"><span class="status-dot dot-{{ st.status|lower }}"></span>{{ st.status }}</span>
+                        {% if st.vehicleType == '2W' %}
+                          <span class="badge-2w">2-Wheeler</span>
+                        {% elif st.vehicleType == '4W' %}
+                          <span class="badge-4w">4-Wheeler</span>
+                        {% else %}
+                          <span class="badge-both">2W + 4W</span>
+                        {% endif %}
+                      </div>
+                      <button type="button" class="heart-btn" data-fav-id="{{ st.id }}" aria-label="Toggle favorite">♡</button>
+                    </div>
+
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-top:0.75rem;">
+                      <h3 class="card-title">{{ st.name }}</h3>
+                      <span class="distance-pill">{{ st.area }}</span>
+                    </div>
+
+                    <p class="card-address">{{ st.address }}</p>
+
+                    <div class="card-specs">
+                      <span class="spec-chip">{{ st.chargerType }}</span>
+                      <span class="spec-chip">{{ st.maxRate }} kW</span>
+                      <span class="spec-chip">{{ st.points }} pts</span>
+                      <span class="spec-chip">{{ st.network }}</span>
+                    </div>
+
+                    <div class="card-availability">
+                      <div><strong>Status basis:</strong> {{ st.statusReason }}</div>
+                      <div class="freshness-text">{{ st.reportCount }} rider reports • Tariff ₹{{ st.tariff.baseRate }}/{{ st.tariff.unit }}</div>
+                    </div>
+
+                    <div class="card-footer">
+                      <div class="card-footer-actions">
+                        <a class="btn-gmaps" href="{{ st.mapsUri }}" target="_blank" rel="noopener noreferrer" data-maps-id="{{ st.id }}">Google Maps</a>
+                        <button type="button" class="btn-copy-gps" data-copy-id="{{ st.id }}">Copy GPS</button>
+                      </div>
+                      <button type="button" class="details-link" data-details-id="{{ st.id }}">Report / Details →</button>
+                    </div>
+                  </article>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section id="how-it-works" class="how-section">
+        <div class="container">
+          <div class="section-header-center">
+            <span class="eyebrow">Simple 3-Step Charging</span>
+            <h2 class="section-title">Charge Without The Guesswork</h2>
+          </div>
+
+          <div class="how-grid">
+            <div class="how-card">
+              <div class="how-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                  <circle cx="12" cy="12" r="7" />
+                </svg>
+              </div>
+              <h3>01 · Locate Nearest Station</h3>
+              <p>
+                Instant GPS ranking or one-tap area navigation across SG Highway,
+                Prahlad Nagar, Bodakdev and beyond.
+              </p>
+            </div>
+
+            <div class="how-card">
+              <div class="how-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m9 12 2 2 4-4" stroke-linecap="round" />
+                </svg>
+              </div>
+              <h3>02 · Check Rider Status</h3>
+              <p>
+                See recent Working, Busy, or Broken reports submitted by EV
+                riders across Ahmedabad before you drive.
+              </p>
+            </div>
+
+            <div class="how-card">
+              <div class="how-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="icon-20">
+                  <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
+                </svg>
+              </div>
+              <h3>03 · Navigate &amp; Report Back</h3>
+              <p>
+                Open turn-by-turn routes in Google Maps and share a quick status
+                report to help the next EV rider.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Community Status Network Section -->
+      <section id="why-us" class="why-section">
+        <div class="container why-layout">
+          <div>
+            <span class="eyebrow eyebrow-dark">Community-Verified Network</span>
+            <h2 class="why-title">
+              Ahmedabad Charging, Verified by Riders.
+            </h2>
+            <p class="why-copy">
+              Unlike static map pins that leave you stranded at broken chargers,
+              ChargeSpot turns recent rider reports into clear Working, Busy,
+              and Broken statuses across Ahmedabad.
+            </p>
+          </div>
+
+          <div class="why-grid">
+            <div class="why-card">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20 text-electric">
+                <circle cx="12" cy="12" r="10" />
+                <path d="m9 12 2 2 4-4" stroke-linecap="round" />
+              </svg>
+              <h3>Rider Status Reports</h3>
+              <p>Working, Busy, or Broken in one tap</p>
+            </div>
+            <div class="why-card">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20 text-electric">
+                <path d="M12 8v4l3 3" stroke-linecap="round" />
+                <circle cx="12" cy="12" r="10" />
+              </svg>
+              <h3>Recent Report Rule</h3>
+              <p>Recent reports keep card status fresh</p>
+            </div>
+            <div class="why-card">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20 text-electric">
+                <path d="M6 3v6m6-6v6m-9 0h12v4a6 6 0 0 1-6 6v3" stroke-linecap="round" />
+              </svg>
+              <h3>2W &amp; 4W Separation</h3>
+              <p>Scooter sockets and car DC bays filtered</p>
+            </div>
+            <div class="why-card">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-20 text-electric">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+              <h3>Private Favourites</h3>
+              <p>Saved locally in your browser</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Self-Recorded Usage Data & Live Activity Section -->
+      <section id="usage-data" class="usage-section">
+        <div class="container">
+          <div class="usage-card">
+            <div class="usage-header">
+              <div class="usage-header-left">
+                <span class="usage-badge">
+                  <span class="pulse-dot-green"></span> Self-Recorded Usage Data
+                </span>
+                <h2 class="usage-title">Autonomous Usage Telemetry</h2>
+                <p class="usage-subtitle">
+                  ChargeSpot continuously records its own usage data into SQLite (visitor sessions, search queries, filter choices, station views, navigation clicks, and task completion times). All events are available for analysis below.
+                </p>
+              </div>
+              <div class="usage-header-actions">
+                <a href="/export.csv?table=usage_events" class="btn-usage-export" download>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-16">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Export Usage CSV
+                </a>
+                <a href="/usage" class="btn-usage-analytics">
+                  Full Analytics Dashboard &rarr;
+                </a>
+              </div>
+            </div>
+
+            <!-- Live Telemetry KPI Grid -->
+            <div class="usage-kpi-grid">
+              <div class="usage-kpi-tile">
+                <div class="usage-kpi-num" id="usageKpiTotalEvents">0</div>
+                <div class="usage-kpi-label">Total Events Recorded</div>
+                <div class="usage-kpi-sub">Every interaction logged</div>
+              </div>
+              <div class="usage-kpi-tile">
+                <div class="usage-kpi-num" id="usageKpiSessions">0</div>
+                <div class="usage-kpi-label">Unique Sessions</div>
+                <div class="usage-kpi-sub">Distinct visitor sessions</div>
+              </div>
+              <div class="usage-kpi-tile">
+                <div class="usage-kpi-num" id="usageKpiStationViews">0</div>
+                <div class="usage-kpi-label">Station Views &amp; Maps</div>
+                <div class="usage-kpi-sub">Charger lookups &amp; directions</div>
+              </div>
+              <div class="usage-kpi-tile">
+                <div class="usage-kpi-num" id="usageKpiReports">0</div>
+                <div class="usage-kpi-label">Rider Reports</div>
+                <div class="usage-kpi-sub">Community status check-ins</div>
+              </div>
+            </div>
+
+            <!-- Live Recorded Activity Feed -->
+            <div class="usage-feed-box">
+              <div class="usage-feed-header">
+                <div class="usage-feed-title">
+                  <span class="pulse-dot-green"></span> Live Activity Feed (Self-Recorded in Real Time)
+                </div>
+                <button type="button" id="refreshUsageBtn" class="btn-feed-refresh">Refresh Activity</button>
+              </div>
+              <div class="usage-feed-list" id="usageFeedList">
+                <div class="usage-feed-loading">Loading recorded usage telemetry...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="container footer-inner">
+          <a href="#top" class="brand-logo">
+            <span class="brand-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" class="icon-20">
+                <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
+              </svg>
+            </span>
+            <span class="brand-wordmark">
+              Charge<span class="text-green">Spot</span>
+            </span>
+            <span class="brand-pill">Ahmedabad EV Grid</span>
+          </a>
+
+          <p class="footer-copy">
+            ChargeSpot Ahmedabad EV Station Finder. Rider-verified Working, Busy,
+            and Broken charger statuses with Google Maps navigation.
+          </p>
+
+          <div class="footer-right">
+            <span class="footer-location">Ahmedabad, Gujarat, India</span>
+            <a href="/usage" class="footer-export-link">Usage Data</a>
+            <a href="/export.csv" class="footer-export-link" download>Export CSV</a>
+          </div>
+        </div>
+      </footer>
+
+      <!-- Station Detail & Rider Report Modal -->
+      <div id="stationModalBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalStationTitle">
+        <div class="modal-sheet" id="stationModalSheet"></div>
+      </div>
+    </main>
+
+    <script src="/static/app.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='/app.js';document.body.appendChild(s);"></script>
+  </body>
+</html>
