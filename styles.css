@@ -1246,10 +1246,20 @@ button {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-.search-input-box:focus-within,
-.search-input-box.is-highlighted {
+.search-input-box:focus-within {
   border-color: #10b981;
   box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.35);
+}
+
+.search-input-box.is-highlighted {
+  border-color: #059669;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.35), 0 8px 20px rgba(16, 185, 129, 0.15);
+  animation: searchPulseGlow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes searchPulseGlow {
+  0% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25); }
+  100% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.45), 0 10px 24px rgba(16, 185, 129, 0.2); }
 }
 
 .search-input-box input {

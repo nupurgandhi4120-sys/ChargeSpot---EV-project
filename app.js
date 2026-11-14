@@ -940,6 +940,49 @@
     );
   }
 
+  function openAndFocusSearch(vehicleType) {
+    if (vehicleType) {
+      state.vehicleFilter = vehicleType;
+    }
+    renderAll();
+
+    if (dom.stationSearchInput) {
+      if (vehicleType === "4W") {
+        dom.stationSearchInput.placeholder = "Search 4-wheeler car chargers (e.g. Torrent Power, CCS2, Statiq, SG Highway)...";
+      } else if (vehicleType === "2W") {
+        dom.stationSearchInput.placeholder = "Search 2-wheeler scooter & bike points (e.g. Ather, Torrent, Naranpura)...";
+      } else {
+        dom.stationSearchInput.placeholder = "Search station, operator, or locality (e.g. Torrent Power, Prahlad Nagar, Statiq)";
+      }
+    }
+
+    const searchCard = document.getElementById("search-controls") || dom.stationSearchInput;
+    if (searchCard) {
+      searchCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    const box = document.getElementById("searchInputBox");
+    if (box) {
+      box.classList.add("is-highlighted");
+      setTimeout(() => {
+        box.classList.remove("is-highlighted");
+      }, 2500);
+    }
+
+    setTimeout(() => {
+      if (dom.stationSearchInput) {
+        try {
+          dom.stationSearchInput.focus({ preventScroll: true });
+          if (dom.stationSearchInput.value) {
+            dom.stationSearchInput.select();
+          }
+        } catch {
+          dom.stationSearchInput.focus();
+        }
+      }
+    }, 380);
+  }
+
   function bindEvents() {
     dom.headerNearMeBtn.addEventListener("click", triggerNearMe);
     dom.searchNearMeBtn.addEventListener("click", triggerNearMe);
@@ -953,33 +996,26 @@
     });
 
     dom.heroBtn4W.addEventListener("click", () => {
-      state.vehicleFilter = state.vehicleFilter === "4W" ? "all" : "4W";
-      logEvent("click", "hero_4w", { details: state.vehicleFilter });
-      renderAll();
-      document.getElementById("stations").scrollIntoView({ behavior: "smooth" });
+      logEvent("click", "hero_4w", { details: "4W" });
+      openAndFocusSearch("4W");
     });
 
     dom.heroBtn2W.addEventListener("click", () => {
-      state.vehicleFilter = state.vehicleFilter === "2W" ? "all" : "2W";
-      logEvent("click", "hero_2w", { details: state.vehicleFilter });
-      renderAll();
-      document.getElementById("stations").scrollIntoView({ behavior: "smooth" });
+      logEvent("click", "hero_2w", { details: "2W" });
+      openAndFocusSearch("2W");
     });
 
     dom.tabVehicleAll.addEventListener("click", () => {
-      state.vehicleFilter = "all";
       logEvent("click", "vehicle_tab", { details: "all" });
-      renderAll();
+      openAndFocusSearch("all");
     });
     dom.tabVehicle4W.addEventListener("click", () => {
-      state.vehicleFilter = "4W";
       logEvent("click", "vehicle_tab", { details: "4W" });
-      renderAll();
+      openAndFocusSearch("4W");
     });
     dom.tabVehicle2W.addEventListener("click", () => {
-      state.vehicleFilter = "2W";
       logEvent("click", "vehicle_tab", { details: "2W" });
-      renderAll();
+      openAndFocusSearch("2W");
     });
 
     dom.toggleRadarBtn.addEventListener("click", () => {
